@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>İlgi Alanlarım - Berkay Sağlam</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Harici CSS -->
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="index.html">Berkay Sağlam</a>
@@ -36,40 +33,27 @@
         
         <header class="text-center border-bottom pb-4 mb-5">
             <h1 class="display-4 fw-bold text-primary">İlgi Alanlarım</h1>
-            <p class="lead text-muted">Oyun dünyası, sinema kültürü ve yeşil sahalara olan tutkum.</p>
+            <p class="lead text-muted">Veri, Strateji ve Tutku: Yeşil Sahalar</p>
         </header>
 
-        <!-- İlgi Alanı 1: Bilgisayar Oyunları (API ENTEGRASYONU) -->
         <section class="mb-5">
-            <h2 class="text-primary mb-3">1. Bilgisayar Oyunları ve Teknoloji</h2>
-            <article class="bg-light p-4 rounded shadow-sm border-start border-primary border-4">
-                <p>Oyun dünyası, benim için sadece bir eğlence aracı değil, aynı zamanda yazılım mimarisinin, hikaye anlatıcılığının ve görsel sanatların kusursuz bir birleşimidir. Yeni çıkan oyun teknolojilerini, e-spor turnuvalarını ve donanım incelemelerini yakından takip ediyorum.</p>
-                
-                <div class="card mt-4 border-0 shadow-sm">
-                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Webtekno Oyun Haberleri</h5>
-                        <span class="badge bg-danger">Canlı RSS API</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <div class="text-center my-3" id="loading-spinner">
-                            <div class="spinner-border text-primary" role="status"></div>
-                            <p class="text-muted mt-2">Webtekno verileri çekiliyor...</p>
-                        </div>
-                        <ul class="list-group list-group-flush" id="news-list"></ul>
+            <div class="row align-items-center mb-4">
+                <div class="col-md-8">
+                    <h2 class="text-primary mb-3">Futbol ve Analitik Yaklaşım</h2>
+                    <p>Futbol benim için sadece 22 kişinin top peşinde koştuğu bir spor değil; her saniyesi matematiksel bir olasılık barındıran, taktiksel disiplin ve mühendislik vizyonu gerektiren devasa bir organizasyondur. Bir bilgisayar mühendisliği öğrencisi olarak, oyunun içindeki <strong>veri setlerini, oyuncu istatistiklerini ve diziliş stratejilerini</strong> analiz etmekten büyük keyif alıyorum.</p>
+                    <p>Özellikle Türkiye Süper Lig'in dinamik yapısı, takımların sezon boyu gösterdiği grafik ve anlık skor değişimleri, veri madenciliği ve olasılık hesaplamaları için eşsiz bir alan sunuyor. Bu sayfada, tutkunu olduğum futbol dünyasından anlık verileri teknolojiyle birleştirerek sunuyorum.</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow" style="width: 150px; height: 150px;">
+                        <i class="display-1">⚽</i>
                     </div>
                 </div>
-            </article>
-        </section>
+            </div>
 
-        <!-- İlgi Alanı 2: Futbol (ESPN API Canlı Maç Sonuçları) -->
-        <section class="mb-5">
-            <h2 class="text-primary mb-3">2. Futbol Tutkusu</h2>
             <article class="bg-light p-4 rounded shadow-sm border-start border-primary border-4">
-                <p>Yeşil sahalardaki rekabet, taktiksel savaşlar ve tribün kültürü benim için her zaman büyüleyici olmuştur. Futbolu sadece 90 dakikalık bir oyun olarak değil, istatistiklerin, takım mühendisliğinin ve stratejinin konuştuğu bir satranç tahtası gibi takip ediyorum.</p>
-                
-                <div class="d-flex justify-content-between align-items-center mt-4 border-bottom pb-2 mb-3">
+                <div class="d-flex justify-content-between align-items-center mt-2 border-bottom pb-2 mb-3">
                     <h5 class="text-dark mb-0" id="league-title">Süper Lig Son Maç Sonuçları</h5>
-                    <span class="badge bg-danger">ESPN API</span>
+                    <span class="badge bg-danger">ESPN API (Live)</span>
                 </div>
 
                 <div class="row" id="espn-scoreboard">
@@ -83,54 +67,17 @@
 
     </main>
 
-    <!-- Footer -->
     <footer class="bg-dark text-white text-center py-3 mt-auto">
         <p class="mb-0">&copy; 2026 Berkay Sağlam. Tüm hakları saklıdır.</p>
     </footer>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- API FETCH İŞLEMLERİ (WEBTEKNO & ESPN) -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            
             /* ==========================================
-               1. WEBTEKNO RSS API ENTEGRASYONU
+               ESPN API (SÜPER LİG MAÇ SONUÇLARI)
             ========================================== */
-            const rssUrl = 'https://www.webtekno.com/oyun/rss.xml';
-            const webteknoApiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`;
-            const newsList = document.getElementById('news-list');
-            const spinner = document.getElementById('loading-spinner');
-
-            fetch(webteknoApiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    spinner.style.display = 'none';
-                    const latestNews = data.items.slice(0, 5); 
-
-                    latestNews.forEach(news => {
-                        const li = document.createElement('li');
-                        li.className = 'list-group-item d-flex justify-content-between align-items-start';
-                        li.innerHTML = `
-                            <div class="ms-2 me-auto">
-                                <div class="fw-bold">
-                                    <a href="${news.link}" target="_blank" class="text-decoration-none text-dark">${news.title}</a>
-                                </div>
-                                <small class="text-muted">Kaynak: Webtekno Oyun</small>
-                            </div>
-                        `;
-                        newsList.appendChild(li);
-                    });
-                })
-                .catch(error => {
-                    spinner.innerHTML = `<div class="alert alert-danger mb-0">Haberler yüklenemedi.</div>`;
-                });
-
-            /* ==========================================
-               2. ESPN API (SÜPER LİG MAÇ SONUÇLARI)
-            ========================================== */
-            // Not: tur.1 = Türkiye Süper Lig | eng.1 = İngiltere Premier Lig
             const espnLeague = 'tur.1'; 
             const espnApiUrl = `https://site.api.espn.com/apis/site/v2/sports/soccer/${espnLeague}/scoreboard`;
             
@@ -144,15 +91,12 @@
                     return response.json();
                 })
                 .then(data => {
-                    // Yükleniyor animasyonunu temizle
                     espnScoreboard.innerHTML = '';
                     
-                    // Lig adını API'den gelen başlık ile güncelle
                     if(data.leagues && data.leagues.length > 0) {
-                        leagueTitle.textContent = data.leagues[0].name + ' Son Maçlar';
+                        leagueTitle.textContent = data.leagues[0].name + ' Son Maç Sonuçları';
                     }
 
-                    // Gelen maç verilerini (events) al
                     const events = data.events;
 
                     if (!events || events.length === 0) {
@@ -160,31 +104,26 @@
                         return;
                     }
 
-                    // Sadece son 4 maçı ekrana güzel kartlar halinde basalım
-                    const latestMatches = events.slice(0, 4);
+                    // Son 10 maçı gösteriyoruz
+                    const latestMatches = events.slice(0, 10);
 
                     latestMatches.forEach(match => {
-                        // Maç detayları
-                        const matchName = match.name; // Örn: "Galatasaray vs Fenerbahçe"
-                        const status = match.status.type.shortDetail; // "FT" (Maç bitti) veya "90'"
-                        
-                        // Takım verilerini ayrıştır (Ev Sahibi ve Deplasman)
+                        const status = match.status.type.shortDetail; 
                         const competitors = match.competitions[0].competitors;
                         let team1 = competitors[0];
                         let team2 = competitors[1];
 
-                        // HTML Kartı Oluştur
                         const matchCard = document.createElement('div');
                         matchCard.className = 'col-md-6 mb-3';
                         matchCard.innerHTML = `
                             <div class="card shadow-sm border-0 h-100">
-                                <div class="card-body text-center d-flex flex-column justify-content-center">
-                                    <span class="badge bg-secondary mb-2 align-self-center">${status}</span>
+                                <div class="card-body text-center d-flex flex-column justify-content-center py-4">
+                                    <span class="badge bg-secondary mb-3 align-self-center">${status}</span>
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="w-100 text-end pe-3">
                                             <h6 class="mb-0 fw-bold">${team1.team.name}</h6>
                                         </div>
-                                        <div class="px-2 bg-dark text-white rounded fs-5 fw-bold">
+                                        <div class="px-3 py-1 bg-dark text-white rounded-pill fs-5 fw-bold" style="min-width: 80px;">
                                             ${team1.score} - ${team2.score}
                                         </div>
                                         <div class="w-100 text-start ps-3">
@@ -200,10 +139,9 @@
                 .catch(error => {
                     espnSpinner.innerHTML = `
                         <div class="alert alert-danger mb-0" role="alert">
-                            ESPN Maç sonuçları çekilirken bir hata oluştu.
+                            ESPN Maç sonuçları çekilirken bir hata oluştu. Lütfen bağlantınızı kontrol edin.
                         </div>
                     `;
-                    console.error("ESPN API Hatası:", error);
                 });
         });
     </script>
