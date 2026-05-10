@@ -53,8 +53,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label fw-bold">Telefon Numarası</label>
-                                <input type="text" class="form-control" id="phone" name="phone" v-model="formData.phone" placeholder="Örn: 05551234567 (Sadece rakam)">
+                                <label class="form-label fw-bold">Telefon Numarası (11 Hane)</label>
+                                <input type="text" class="form-control" id="phone" name="phone" v-model="formData.phone" placeholder="Örn: 05551234567">
+                                <small class="text-muted">Başında sıfır ile birlikte 11 haneli yazınız.</small>
                             </div>
 
                             <div class="row">
@@ -86,12 +87,12 @@
 
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <button type="button" @click="validateWithVue" class="btn btn-success w-100 py-2 fw-bold">
+                                    <button type="button" @click="validateWithVue" class="btn btn-success w-100 py-2 fw-bold shadow-sm">
                                         Vue.js ile Denetle
                                     </button>
                                 </div>
                                 <div class="col-md-6">
-                                    <button type="button" onclick="validateWithJS()" class="btn btn-primary w-100 py-2 fw-bold">
+                                    <button type="button" onclick="validateWithJS()" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
                                         JavaScript ile Denetle
                                     </button>
                                 </div>
@@ -114,31 +115,30 @@
 
     <script>
         function validateWithJS() {
-            // Verileri DOM üzerinden çekme
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
+            // Boşlukları temizleyerek telefonu alıyoruz
+            const phone = document.getElementById('phone').value.replace(/\s/g, '');
             const message = document.getElementById('message').value.trim();
             
-            // Regex tanımları
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const phoneRegex = /^[0-9]+$/; // Sadece rakam kontrolü
+            const phoneRegex = /^[0-9]+$/;
 
-            // Kontroller
             if (name === "" || email === "" || phone === "" || message === "") {
-                alert("JS Uyarısı: Lütfen tüm alanları doldurunuz!");
+                alert("JS Hatası: Lütfen tüm alanları doldurunuz!");
                 return;
             }
             if (!emailRegex.test(email)) {
-                alert("JS Uyarısı: E-posta adresi geçersiz!");
+                alert("JS Hatası: E-posta adresi geçersiz!");
                 return;
             }
-            if (!phoneRegex.test(phone)) {
-                alert("JS Uyarısı: Telefon numarası sadece rakamlardan oluşmalıdır!");
+            // Sayı kontrolü VE tam 11 hane kontrolü
+            if (!phoneRegex.test(phone) || phone.length !== 11) {
+                alert("JS Hatası: Telefon numarası sadece rakamlardan oluşmalı ve tam 11 haneli olmalıdır!");
                 return;
             }
 
-            alert("Saf JavaScript denetimi başarılı. Veriler sonuç sayfasına aktarılıyor...");
+            alert("Saf JavaScript denetimi başarılı. Form gönderiliyor...");
             document.getElementById('contactForm').submit();
         }
     </script>
@@ -163,13 +163,15 @@
                 validateWithVue() {
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     const phoneRegex = /^[0-9]+$/;
+                    // Telefonun içindeki boşlukları temizleyerek kontrol et
+                    const purePhone = this.formData.phone.toString().replace(/\s/g, '');
                     
-                    if (!this.formData.name || !this.formData.email || !this.formData.phone || !this.formData.message) {
-                        alert("Vue.js Uyarısı: Formda boş alan bırakılamaz!");
+                    if (!this.formData.name || !this.formData.email || !purePhone || !this.formData.message) {
+                        alert("Vue.js Hatası: Boş alan bırakılamaz!");
                     } else if (!emailRegex.test(this.formData.email)) {
-                        alert("Vue.js Uyarısı: E-posta formatı hatalı!");
-                    } else if (!phoneRegex.test(this.formData.phone)) {
-                        alert("Vue.js Uyarısı: Telefon sadece sayısal karakter içermelidir!");
+                        alert("Vue.js Hatası: E-posta formatı hatalı!");
+                    } else if (!phoneRegex.test(purePhone) || purePhone.length !== 11) {
+                        alert("Vue.js Hatası: Telefon numarası 11 haneli bir sayı olmalıdır!");
                     } else {
                         alert("Vue.js Framework denetimi başarılı. Form gönderiliyor...");
                         document.getElementById('contactForm').submit();
