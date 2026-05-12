@@ -163,8 +163,7 @@
                 validateWithVue() {
                     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     const phoneRegex = /^[0-9]+$/;
-                    // Telefonun içindeki boşlukları temizleyerek kontrol et
-                    const purePhone = this.formData.phone.toString().replace(/\s/g, '');
+                    // Telefonun içindeki boşlukları temizleyerek kontrol ediyoruzx (/\s/g, '');
                     
                     if (!this.formData.name || !this.formData.email || !purePhone || !this.formData.message) {
                         alert("Vue.js Hatası: Boş alan bırakılamaz!");
