@@ -6,10 +6,27 @@
     <title>İlgi Alanlarım - Berkay Sağlam</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .cl-card {
+            border-left: 5px solid #001c58; /* Şampiyonlar Ligi Laciverti */
+            transition: all 0.3s ease;
+        }
+        .cl-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .score-badge {
+            background-color: #001c58;
+            color: white;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light d-flex flex-column min-vh-100">
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container">
             <a class="navbar-brand" href="index.html">Berkay Sağlam</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -30,34 +47,102 @@
     </nav>
 
     <main class="container my-5">
-        
-        <header class="text-center border-bottom pb-4 mb-5">
+        <header class="text-center mb-5 border-bottom pb-4">
             <h1 class="display-4 fw-bold text-primary">İlgi Alanlarım</h1>
-            <p class="lead text-muted">Veri, Strateji ve Tutku: Yeşil Sahalar</p>
+            <p class="lead text-muted">Futbol Merakı</p>
         </header>
 
-        <section class="mb-5">
-            <div class="row align-items-center mb-4">
-                <div class="col-md-8">
-                    <h2 class="text-primary mb-3">Futbol ve Analitik Yaklaşım</h2>
-                    <p>Futbol benim için sadece 22 kişinin top peşinde koştuğu bir spor değil; her saniyesi matematiksel bir olasılık barındıran, taktiksel disiplin ve mühendislik vizyonu gerektiren devasa bir organizasyondur. Bir bilgisayar mühendisliği öğrencisi olarak, oyunun içindeki <strong>veri setlerini, oyuncu istatistiklerini ve diziliş stratejilerini</strong> analiz etmekten büyük keyif alıyorum.</p>
-                    <p>Özellikle Türkiye Süper Lig'in dinamik yapısı, takımların sezon boyu gösterdiği grafik ve anlık skor değişimleri, veri madenciliği ve olasılık hesaplamaları için eşsiz bir alan sunuyor. Bu sayfada, tutkunu olduğum futbol dünyasından anlık verileri teknolojiyle birleştirerek sunuyorum.</p>
-                </div>
-                <div class="col-md-4 text-center">
-                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow" style="width: 150px; height: 150px;">
-                        <i class="display-1">⚽</i>
-                    </div>
-                </div>
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <h3 class="text-dark fw-bold">UEFA Şampiyonlar Ligi ve Veri</h3>
+                <p>Futbol dünyasının zirvesi olan Şampiyonlar Ligi, yüksek tempolu oyununun yanı sıra muazzam bir veri akışı barındırır. Bu bölümde, <strong>Football-Data.org API</strong> servisinden çektiğim canlı verilerle Devler Ligi'ndeki güncel maç durumlarını paylaşıyorum.</p>
             </div>
+        </div>
 
-        </section>
-
+        <div class="row g-4" id="cl-matches-container">
+            <div class="col-12 text-center py-5" id="loader">
+                <div class="spinner-border text-primary" role="status"></div>
+                <p class="mt-3 text-muted">Şampiyonlar Ligi verileri canlı olarak çekiliyor...</p>
+            </div>
+        </div>
     </main>
 
     <footer class="bg-dark text-white text-center py-3 mt-auto">
-        <p class="mb-0">&copy; 2026 Berkay Sağlam. Tüm hakları saklıdır.</p>
+        <p class="mb-0 small">&copy; 2026 Berkay Sağlam. Tüm hakları saklıdır.</p>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+     document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('cl-matches-container');
+            
+            // api.php dosyasını çağırıyoruz.
+            const apiUrl = 'api.php';
+
+            fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) throw new Error('Api hatası');
+                return response.json();
+            })
+            .then(data => {
+                container.innerHTML = ''; 
+                
+                // Eğer maç verisi yoksa veya api'den hata döndüyse
+                if (!data.matches) {
+                    container.innerHTML = '<div class="alert alert-warning w-100">Veriler alınamadı veya günlük API limitimiz doldu.</div>';
+                    return;
+                }
+
+                // Sadece son 10 maçı gösterelim
+                const matches = data.matches.slice(0, 10);
+
+                if (matches.length === 0) {
+                    container.innerHTML = '<div class="alert alert-info w-100">Şu an gösterilecek aktif maç bulunmuyor.</div>';
+                    return;
+                }
+
+                matches.forEach(match => {
+                    const homeTeam = match.homeTeam.shortName || match.homeTeam.name;
+                    const awayTeam = match.awayTeam.shortName || match.awayTeam.name;
+                    const homeLogo = match.homeTeam.crest;
+                    const awayLogo = match.awayTeam.crest;
+                    
+                    const score = (match.status === 'FINISHED' || match.status === 'IN_PLAY') 
+                        ? `${match.score.fullTime.home} - ${match.score.fullTime.away}`
+                        : new Date(match.utcDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+
+                    const html = `
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 shadow-sm border-0 cl-card">
+                                <div class="card-body d-flex flex-column justify-content-center">
+                                    <div class="text-center mb-3 small text-muted fw-bold">
+                                        ${match.group || 'Şampiyonlar Ligi'}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="text-center flex-fill" style="width:33%;">
+                                            <img src="${homeLogo}" alt="" height="35" class="mb-2">
+                                            <div class="small fw-bold">${homeTeam}</div>
+                                        </div>
+                                        <div class="px-2 text-center" style="width:33%;">
+                                            <span class="score-badge">${score}</span>
+                                        </div>
+                                        <div class="text-center flex-fill" style="width:33%;">
+                                            <img src="${awayLogo}" alt="" height="35" class="mb-2">
+                                            <div class="small fw-bold">${awayTeam}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += html;
+                });
+            })
+            .catch(error => {
+                container.innerHTML = `<div class="alert alert-danger w-100">Sunucu bağlantı hatası. Lütfen sayfayı yenileyin.</div>`;
+                console.error(error);
+            });
+        });
+    </script>
+
 </body>
 </html>
